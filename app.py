@@ -1,8 +1,19 @@
+import os
 from flask import Flask, request, jsonify
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
 app = Flask(__name__)
+
+# Fetch the API token from the environment variable
+API_TOKEN = os.getenv("API_TOKEN")
+
+@app.before_request
+def check_token():
+    # Extract token from the Authorization header
+    token = request.headers.get('Authorization')
+    if not token or token != f"Bearer {API_TOKEN}":
+        return jsonify({'error': 'Unauthorized'}), 401
 
 @app.route('/scrape', methods=['POST'])
 def scrape():
@@ -31,4 +42,5 @@ def scrape():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
