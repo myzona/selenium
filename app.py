@@ -2,6 +2,9 @@ import os
 import base64
 from flask import Flask, request, jsonify
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 app = Flask(__name__)
 
@@ -54,7 +57,17 @@ def screenshot():
     driver = webdriver.Chrome(options=options)
 
     try:
+        # Set extended timeouts
+        driver.set_page_load_timeout(30)  # Set a 30-second timeout for page load
+        driver.set_script_timeout(30)  # Set a 30-second timeout for script execution
+
+        # Navigate to the URL
         driver.get(url)
+
+        # Wait until the page is fully loaded (waiting for the body tag to be present)
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
 
         # Execute JavaScript to get the full page height
         total_height = driver.execute_script("return document.body.scrollHeight")
