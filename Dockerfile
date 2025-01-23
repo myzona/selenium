@@ -7,9 +7,6 @@ RUN apt-get update && apt-get install -y \
 # Install Chromium browser and ChromeDriver
 RUN apt-get install -y chromium chromium-driver
 
-# Install node-fetch globally
-RUN npm install -g node-fetch
-
 # Install Python dependencies
 COPY requirements.txt /app/
 WORKDIR /app
