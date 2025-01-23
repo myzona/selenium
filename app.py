@@ -1,4 +1,5 @@
 import os
+import base64
 from flask import Flask, request, jsonify
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -40,7 +41,37 @@ def scrape():
     finally:
         driver.quit()
 
+@app.route('/screenshot', methods=['POST'])
+def screenshot():
+    url = request.json.get('url')
+    if not url:
+        return jsonify({'error': 'URL is required'}), 400
+
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Headless mode
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+    driver = webdriver.Chrome(options=options)
+
+    try:
+        driver.get(url)
+        # Take a screenshot and save it to a temporary file
+        screenshot_path = "/tmp/screenshot.png"
+        driver.save_screenshot(screenshot_path)
+
+        # Read the screenshot file and encode it in base64
+        with open(screenshot_path, "rb") as image_file:
+            encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+
+        return jsonify({
+            'url': url,
+            'screenshot': encoded_image
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        driver.quit()
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
-
