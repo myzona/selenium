@@ -73,7 +73,7 @@ def screenshot():
         total_height = driver.execute_script("return document.body.scrollHeight")
 
         # Set the browser window size to match the full page height
-        driver.set_window_size(640, total_height)  # 1920px width for desktop view
+        driver.set_window_size(1024, total_height)  # 1920px width for desktop view
 
         # Take a screenshot and save it to a temporary file
         screenshot_path = "/tmp/full_screenshot.png"
