@@ -2,7 +2,6 @@ import os
 import base64
 from flask import Flask, request, jsonify
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 
 app = Flask(__name__)
 
@@ -56,8 +55,15 @@ def screenshot():
 
     try:
         driver.get(url)
+
+        # Execute JavaScript to get the full page height
+        total_height = driver.execute_script("return document.body.scrollHeight")
+
+        # Set the browser window size to match the full page height
+        driver.set_window_size(1920, total_height)  # 1920px width for desktop view
+
         # Take a screenshot and save it to a temporary file
-        screenshot_path = "/tmp/screenshot.png"
+        screenshot_path = "/tmp/full_screenshot.png"
         driver.save_screenshot(screenshot_path)
 
         # Read the screenshot file and encode it in base64
